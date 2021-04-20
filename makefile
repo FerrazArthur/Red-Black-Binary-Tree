@@ -8,3 +8,5 @@ Client.o: Client.c $(DEPS)
 	$(CC) $(CFLAGS) -c -o Client.o Client.c
 RB.o: RB.c
 	$(CC) $(CFLAGS) -c -o RB.o RB.c
+
+rm RB.o Client.o
