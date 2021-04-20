@@ -1,4 +1,5 @@
 #include "RB.h"
+#define SMALLER (-1)
 #define ABORT 0
 #define HASNEWSON 1
 #define RIGHTGRANDSON 2
@@ -141,7 +142,8 @@ void RLRotation(Node** head)
 
 int insertNodeRBTree(Node** head, Node* root, Node* newNode)
 {
-    int aux = 0;
+    int answer = ABORT;
+    int compare = 0;
     if((*head) == NULL)
     {
         *head = newNode;
@@ -149,15 +151,15 @@ int insertNodeRBTree(Node** head, Node* root, Node* newNode)
             changeColor(*head, Black);
         return HASNEWSON;
     }
-    else if(compareInfo(getKey(*head), getKey(newNode)) == 0 || newNode == NULL)
-        return 0;//doesnt suport repetition of info
-    else if(compareInfo(getKey(*head), getKey(newNode)) < 0)
+    else if(newNode != NULL)
+        compare = compareInfo(getKey(*head), getKey(newNode));
+    if(compare == SMALLER)
     {//newNode's info is bigger than current's
-       if((aux = insertNodeRBTree(&(*head)->rightRB, root, newNode)) != ABORT)//recursive call passing rightRB
+       if((answer = insertNodeRBTree(&(*head)->rightRB, root, newNode)) != ABORT)//recursive call passing rightRB
         {
-            if(aux == HASNEWSON)// aux iquals 1 means that the node in this Node(head*) rightRB is Red
+            if(answer == HASNEWSON)// answer iquals 1 means that the node in this Node(head*) rightRB is Red
                 return RIGHTGRANDSON;//tells previous recursive calls that a red Node is located in his rightRB pointer
-            else if(aux == RIGHTGRANDSON || aux == LEFTGRANDSON)
+            else if(answer == RIGHTGRANDSON || answer == LEFTGRANDSON)
             {
                 if(isRed((*head)->rightRB))//if head*'s rightRB points to a Red Node, RB properties are being violated
                 {
@@ -173,7 +175,7 @@ int insertNodeRBTree(Node** head, Node* root, Node* newNode)
                     }
                     else//if uncle is Black: rotate
                     {
-                        if(aux == RIGHTGRANDSON)//rotate Son to *head
+                        if(answer == RIGHTGRANDSON)//rotate Son to *head
                             RRotation(head);
                         else//rotate GrandSon to *head
                             RLRotation(head);
@@ -189,11 +191,11 @@ int insertNodeRBTree(Node** head, Node* root, Node* newNode)
     }
     else
     {//newNode's info is smaller than current's
-            if((aux = insertNodeRBTree(&(*head)->leftRB, root, newNode)) != ABORT)//recursive call passing leftRB
+            if((answer = insertNodeRBTree(&(*head)->leftRB, root, newNode)) != ABORT)//recursive call passing leftRB
             {
-            if(aux == HASNEWSON)// aux iquals 1 means that the node in this Node(head*) leftRB is Red
+            if(answer == HASNEWSON)// answer iquals 1 means that the node in this Node(head*) leftRB is Red
                 return LEFTGRANDSON;//tells previous recursive calls that a red Node is located in his leftRB pointer
-            else if(aux == LEFTGRANDSON || aux == RIGHTGRANDSON)
+            else if(answer == LEFTGRANDSON || answer == RIGHTGRANDSON)
             {
                 if(isRed((*head)->leftRB))//if head*'s leftRB points to a Red Node, RB properties are being violated
                 {
@@ -209,7 +211,7 @@ int insertNodeRBTree(Node** head, Node* root, Node* newNode)
                     }
                     else//if uncle is Black: rotate
                     {
-                        if(aux == LEFTGRANDSON)//rotate father to *head
+                        if(answer == LEFTGRANDSON)//rotate father to *head
                             LRotation(head);
                         else//rotate son to *head
                             LRRotation(head);
@@ -223,19 +225,20 @@ int insertNodeRBTree(Node** head, Node* root, Node* newNode)
             return RBBALANCED;
         }
     }
-    return aux;
+    //if compare equals zero, return ABORT because newNode isn't declared or newNode is already in the tree
+    return answer;
 }
 
 int removeNodeRBTree(Node** head,Node* root, void* info)
 {
-    int answer = 0;
+    int answer = ABORT;
     Node* ptr = NULL;
     void* aux = NULL;
     if (*head == NULL)
-        return 0;
+        return answer;
     int compare = compareInfo(getKey(*head), info);
     if(compare == 0)
-    {//remover *head
+    {//remove *head
         if((*head)->leftRB == NULL || (*head)->rightRB == NULL)
         {
             ptr = *head;//this will be removed
@@ -279,15 +282,16 @@ int removeNodeRBTree(Node** head,Node* root, void* info)
             destroyNodeRBTree(ptr);
             return answer;
         }
+        //Only execute this when *head is a internal Node and has leftRB and rightRB are != NULL
         ptr = findSmallestNodeRBTree((*head)->rightRB);
         aux = (*head)->info;
         (*head)->info = ptr->info;
         ptr->info = aux;
-        compare = -1;//This is necessary because we swap *head info that is located in his rightSubTree and need to find it again
+        compare = SMALLER;//This is necessary because we swap *head info that is located in his rightSubTree and need to find it again
     }
-    if(compare < 0)
+    if(compare == SMALLER)
     {//*head is smaller than info
-        if(answer == 0)
+        if(answer == ABORT)
             answer = removeNodeRBTree(&(*head)->rightRB, root, info);
         if(answer == DOUBLEBLACK)
         {
@@ -336,7 +340,7 @@ int removeNodeRBTree(Node** head,Node* root, void* info)
     }
     else
     {//*head is bigger than info
-        if(answer == 0)
+        if(answer == ABORT)
             answer = removeNodeRBTree(&(*head)->leftRB, root, info);
         if(answer == DOUBLEBLACK)
         {
