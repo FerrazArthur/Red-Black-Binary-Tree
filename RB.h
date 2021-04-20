@@ -1,4 +1,4 @@
-*
+/*
 Projeto: Árvore binária balanceada rubro-negra
 Autor: Arthur Ferraz
 Propriedades:

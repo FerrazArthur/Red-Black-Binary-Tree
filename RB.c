@@ -85,7 +85,7 @@ Node* findSmallestNodeRBTree(Node* head)
     if(head != NULL)
     {
         if(head->leftRB != NULL)
-            findSmallestNodeRBTree(head->leftRB);
+            return findSmallestNodeRBTree(head->leftRB);
     }
     return head;
 }
@@ -226,20 +226,15 @@ int insertNodeRBTree(Node** head, Node* root, Node* newNode)
     return aux;
 }
 
-int blackHeight(Node* head)
-{
-    int height = 0;
-    if(head != NULL)
-        height = isRed(head)? blackHeight(head->leftRB) : 1 + blackHeight(head->leftRB);
-    return height;
-}
-
 int removeNodeRBTree(Node** head,Node* root, void* info)
 {
     int answer = 0;
     Node* ptr = NULL;
     void* aux = NULL;
-    if(compareInfo(getKey(*head), info) == 0)
+    if (*head == NULL)
+        return 0;
+    int compare = compareInfo(getKey(*head), info);
+    if(compare == 0)
     {//remover *head
         if((*head)->leftRB == NULL || (*head)->rightRB == NULL)
         {
@@ -288,11 +283,13 @@ int removeNodeRBTree(Node** head,Node* root, void* info)
         aux = (*head)->info;
         (*head)->info = ptr->info;
         ptr->info = aux;
-        return removeNodeRBTree(&(*head)->rightRB, root, info);
+        compare = -1;//This is necessary because we swap *head info that is located in his rightSubTree and need to find it again
     }
-    else if(compareInfo(getKey(*head), info) < 0)
-    {
-        if((answer = removeNodeRBTree(&(*head)->rightRB, root, info)) == DOUBLEBLACK)
+    if(compare < 0)
+    {//*head is smaller than info
+        if(answer == 0)
+            answer = removeNodeRBTree(&(*head)->rightRB, root, info);
+        if(answer == DOUBLEBLACK)
         {
             enum Color auxColor = (*head)->color;//no matter the *head initial color, we must* keep that after the rotations
             if(isRed((*head)->leftRB))//Rebalance for cases 1.1 and 1.2
@@ -305,75 +302,82 @@ int removeNodeRBTree(Node** head,Node* root, void* info)
                 LRotation(head);
             }
             else
-            {
-                if(!isRed((*head)->leftRB->leftRB) && !isRed((*head)->leftRB->rightRB))
-                {//both Double Black's sibling's subtrees are Black or NULL
-                    changeColor((*head)->leftRB, Red);
-                    if(isRed(*head) || *head == root)
+            {//case 2
+                if((*head)->leftRB == NULL)
+                    if(isRed(*head))
                         changeColor(*head, Black);
                     else
                         return DOUBLEBLACK;
+
+                else if(!isRed((*head)->leftRB->rightRB) && !isRed((*head)->leftRB->leftRB))
+                {//case 2.2.3
+                    changeColor((*head)->leftRB, Red);
+                    if(isRed(*head))//case 2.2.3.1
+                        changeColor(*head, Black);
+                    else//case 2.2.3.2
+                        return DOUBLEBLACK;
                 }
-                else if(isRed((*head)->leftRB->rightRB))//case2
-                {//LR rotation
+                else if(isRed((*head)->leftRB->rightRB))
+                {//case 2.1, 2.2.2 and 2.2.4
                     changeColor(*head, Black);
                     LRRotation(head);
-                    changeColor(*head, auxColor);//this
+                    changeColor(*head, auxColor); 
                 }
-                else if(isRed((*head)->leftRB->leftRB))//case1
-                {//LL rotation
+                else if(isRed((*head)->leftRB->leftRB))
+                {//case 2.2.1
                     changeColor(*head, Black);
-                    changeColor((*head)->leftRB->leftRB, Black);
                     LRotation(head);
-                    changeColor(*head, auxColor);//this
+                    changeColor(*head, auxColor);
+                    changeColor((*head)->leftRB, Black);
                 }
-            }
+            } 
             return RBBALANCED;
         }
     }
     else
-    {
-        if((answer = removeNodeRBTree(&(*head)->leftRB, root, info)) == DOUBLEBLACK)
+    {//*head is bigger than info
+        if(answer == 0)
+            answer = removeNodeRBTree(&(*head)->leftRB, root, info);
+        if(answer == DOUBLEBLACK)
         {
-            if(isRed((*head)->rightRB))
-            {
-                if((*head)->rightRB->rightRB != NULL)//case both it's children are Black and not NULL
-                {
-                    changeColor(*head, Red);
-                    LRotation(head);
-                    changeColor(*head, Black);
-                }
+            enum Color auxColor = (*head)->color;//no matter the *head initial color, we must* keep that after the rotations
+            if(isRed((*head)->rightRB))//Rebalance for cases 1.1 and 1.2
+            {//both it's children are not NULL and Black (they cant be red and have at least 1 Black height
+                changeColor((*head)->rightRB, Black);//1.1a
+                if((*head)->leftRB == NULL)//case 1.1 -- the Black height is 1
+                    changeColor(*head, Red);//1.1b
                 else
-                {
-                    if(isRed(*head))
-                        changeColor(*head, Black);
-                    LRRotation(head);
-                    changeColor((*head)->rightRB, Black);
-                }
+                    changeColor((*head)->rightRB->leftRB, Red);
+                RRotation(head);
             }
             else
-            {
-                enum Color auxColor = (*head)->color;//if case1 of case2, this color return to the node in *head
-                if((*head)->rightRB->rightRB != NULL && isRed((*head)->rightRB->rightRB))//case1
-                {//RR rotation
-                    changeColor(*head, Black);
-                    RRotation(head);
-                    changeColor((*head)->rightRB, Black);
-                    changeColor(*head, auxColor);//this
-                }
-                else if((*head)->rightRB->leftRB != NULL && isRed((*head)->rightRB->leftRB))//case2
-                {//RL rotation
-                    changeColor(*head, Black);
-                    RLRotation(head);
-                    changeColor(*head, auxColor);//this
-                }
-                else
-                {//both Double Black's sibling's subtrees are Black
-                    changeColor((*head)->rightRB, Red);
-                    if(isRed(*head) || *head == root)
+            {//case 2
+                if((*head)->rightRB == NULL)
+                    if(isRed(*head))
                         changeColor(*head, Black);
                     else
                         return DOUBLEBLACK;
+
+                else if(!isRed((*head)->rightRB->leftRB) && !isRed((*head)->rightRB->rightRB))
+                {//case 2.2.3
+                    changeColor((*head)->rightRB, Red);
+                    if(isRed(*head))//case 2.2.3.1
+                        changeColor(*head, Black);
+                    else//case 2.2.3.2
+                        return DOUBLEBLACK;
+                }
+                else if(isRed((*head)->rightRB->leftRB))
+                {//case 2.1, 2.2.2 and 2.2.4
+                    changeColor(*head, Black);
+                    RLRotation(head);
+                    changeColor(*head, auxColor); 
+                }
+                else if(isRed((*head)->rightRB->rightRB))
+                {//case 2.2.1
+                    changeColor(*head, Black);
+                    RRotation(head);
+                    changeColor(*head, auxColor);
+                    changeColor((*head)->rightRB, Black);
                 }
             }
             return RBBALANCED;
