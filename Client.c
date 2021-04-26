@@ -91,29 +91,23 @@ void printArtigo(Artigo* ptr)
 Artigo* createArtigo()
 {
     Artigo* ptr = (Artigo*) malloc(sizeof(Artigo));
-    char enter;
     if(ptr != NULL)
     {
         printf("Digite o ID: ");
         scanf("%d", &ptr->id);
         printf("Digite o ano: ");
         scanf("%d", &ptr->ano);
-        scanf("%c",&enter);
+        setbuf(stdin, NULL);
         printf("Nome do Autor: ");
-        scanf("%[^\n]",ptr->autor);
-        scanf("%c",&enter);
+        fgets(ptr->autor, 200, stdin);
         printf("Titulo: ");
-        scanf("%[^\n]", ptr->titulo);
-        scanf("%c",&enter);
+        fgets(ptr->titulo, 200, stdin);
         printf("Revista: ");
-        scanf("%[^\n]", ptr->revista);
-        scanf("%c",&enter);
+        fgets(ptr->revista, 200, stdin);
         printf("DOI: ");
-        scanf("%[^\n]", ptr->DOI);
-        scanf("%c",&enter);
+        fgets(ptr->DOI, 20, stdin);
         printf("Palavra Chave: ");
-        scanf("%[^\n]", ptr->palavraChave);
-        scanf("%c",&enter);
+        fgets(ptr->palavraChave, 200, stdin);
     }
     return ptr;
 }
