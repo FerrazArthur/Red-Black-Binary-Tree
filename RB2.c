@@ -80,6 +80,16 @@ void printRBTree(Node* head, int level)
         printRBTree(head->leftRB, level+1);
     }
 }
+void printIDTitle(Node* head)
+{
+    if(head != NULL)
+    {
+        printIDTitle(head->rightRB);
+        
+        printIDTitle(head->leftRB);
+        printKey2(head);
+    }
+}
 
 Node* findSmallestNodeRBTree(Node* head)
 {
@@ -96,7 +106,7 @@ Node* searchInfoRBTree(Node* head, int key)
 {
     if (head != NULL)
     {
-        printKey(head);
+
         if(compareInfo(getKey(head), key) == 1){
             return searchInfoRBTree(head->leftRB, key);
         }
