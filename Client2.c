@@ -6,7 +6,7 @@ Autor: Arthur Ferraz
 
 typedef struct artigo
 {
-    int id;
+  int id;
 	int ano;
 	char autor[200];
 	char titulo[200];
@@ -51,6 +51,16 @@ void destroyInfo(void* info)
 void printKey(Node* ptr)
 {
     if(ptr != NULL)
+        printf("%d", getArtigo(ptr)->id);
+}
+void printKey2(Node* ptr)
+{
+    if(ptr != NULL)
+        printf("\n%d        %s", getArtigo(ptr)->id,getArtigo(ptr)->titulo);
+}
+void printTitle(Node* ptr)
+{
+    if(ptr != NULL)
         printf("%s", getArtigo(ptr)->titulo);
 }
 
@@ -80,22 +90,29 @@ void printArtigo(Artigo* ptr)
 Artigo* createArtigo()
 {
     Artigo* ptr = (Artigo*) malloc(sizeof(Artigo));
+    char enter;
     if(ptr != NULL)
     {
-    	printf("\nDigite o ID: ");
+    	printf("Digite o ID: ");
     	scanf("%d", &ptr->id);
-    	printf("\nDigite o ano: ");
+    	printf("Digite o ano: ");
     	scanf("%d", &ptr->ano);
+      scanf("%c",&enter);
     	printf("Nome do Autor: ");
-    	scanf("%s", ptr->autor);
-    	printf("\nTitulo: ");
-    	scanf("%s", ptr->titulo);
-    	printf("\nRevista: ");
-    	scanf("%s", ptr->revista);
-    	printf("\n DOI: ");
-    	scanf("%s", ptr->DOI);
-    	printf("\n Palavra Chave: ");
-    	scanf("%s", ptr->palavraChave);
+    	scanf("%[^\n]",ptr->autor);
+      scanf("%c",&enter);
+    	printf("Titulo: ");
+    	scanf("%[^\n]", ptr->titulo);
+      scanf("%c",&enter);
+    	printf("Revista: ");
+    	scanf("%[^\n]", ptr->revista);
+      scanf("%c",&enter);
+    	printf("DOI: ");
+    	scanf("%[^\n]", ptr->DOI);
+      scanf("%c",&enter);
+    	printf("Palavra Chave: ");
+    	scanf("%[^\n]", ptr->palavraChave);
+      scanf("%c",&enter);
 
     }
     return ptr;
@@ -120,12 +137,13 @@ void menuTxt()
     printf("R : remover artigo\n");
     printf("P : pesquisar artigo\n");
     printf("M : mostrar ID\n");
+    printf("L : Listar ID com Titulo\n");
     printf("Q : Sair\n");
 }
 
 void menu()
 {
-    char option = '0';
+    char enter,option = '0';
     int key;
     Node* RB = NULL;//where we store the AVL
     Node* ptr = NULL;//auxiliary
@@ -133,6 +151,7 @@ void menu()
         menuTxt();//print the menu
         printf("Escolha uma opção:\n>");
         scanf("%c", &option);
+        printf("\n");
         switch(option)
         {
             case 'i':
@@ -161,10 +180,17 @@ void menu()
                 else
                     printf("key não está registrada\n");
                 break;
-           case 'm':
-           case 'M':
+            case 'm':
+            case 'M':
                 printRBTree(RB, 0);
+                scanf("%c",&enter);
                 break;
+            case 'l':
+            case 'L':
+                printIDTitle(RB);
+                scanf("%c",&enter);
+                break;
+            
            default:
                 break;
         }
