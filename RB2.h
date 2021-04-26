@@ -50,6 +50,7 @@ void printKey(Node* ptr);
 Input: pointer to Node
 Output: print key of this node
 */
+void printKey2(Node* ptr);
 //***********************************************END
 
 void destroyNodeRBTree(Node* node);
@@ -83,7 +84,7 @@ Output:
     0 if node is black or NULL
     1 if it is red 
 */
-
+void printIDTitle(Node* head);
 
 void printRBTree(Node* head, int level);
 /*
