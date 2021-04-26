@@ -80,6 +80,16 @@ void printRBTree(Node* head, int level)
         printRBTree(head->leftRB, level+1);
     }
 }
+void printIDTitle(Node* head)
+{
+    if(head != NULL)
+    {
+        printIDTitle(head->rightRB);
+        
+        printIDTitle(head->leftRB);
+        printKey2(head);
+    }
+}
 
 Node* findSmallestNodeRBTree(Node* head)
 {
@@ -91,9 +101,19 @@ Node* findSmallestNodeRBTree(Node* head)
     return head;
 }
 
-Node* searchInfoRBTree(Node* head, void* info)
+
+Node* searchInfoRBTree(Node* head, int key)
 {
-    return NULL;
+    if (head != NULL)
+    {
+
+        if(compareInfo(getKey(head), key) == 1){
+            return searchInfoRBTree(head->leftRB, key);
+        }
+        else if (compareInfo(getKey(head), key) == -1)
+            return searchInfoRBTree(head->rightRB, key);
+    }
+    return head;//return either NULL of the Node that has getKey(head) == key
 }
 
 void LRotation(Node** head)
@@ -144,6 +164,8 @@ int insertNodeRBTree(Node** head, Node* root, Node* newNode)
 {
     int answer = ABORT;
     int compare = 0;
+    if(newNode == NULL)
+        return answer;
     if((*head) == NULL)
     {
         *head = newNode;
@@ -151,8 +173,9 @@ int insertNodeRBTree(Node** head, Node* root, Node* newNode)
             changeColor(*head, Black);
         return HASNEWSON;
     }
-    else if(newNode != NULL)
-        compare = compareInfo(getKey(*head), getKey(newNode));
+    compare = compareInfo(getKey(*head), getKey(newNode));
+    if(compare == 0)
+        return answer;
     if(compare == SMALLER)
     {//newNode's info is bigger than current's
        if((answer = insertNodeRBTree(&(*head)->rightRB, root, newNode)) != ABORT)//recursive call passing rightRB
@@ -229,7 +252,7 @@ int insertNodeRBTree(Node** head, Node* root, Node* newNode)
     return answer;
 }
 
-int removeNodeRBTree(Node** head,Node* root, void* info)
+int removeNodeRBTree(Node** head,Node* root, int info)
 {
     int answer = ABORT;
     Node* ptr = NULL;

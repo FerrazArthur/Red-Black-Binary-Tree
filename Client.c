@@ -4,159 +4,191 @@ Autor: Arthur Ferraz
 #include"RB.h"
 #include <string.h>
 
-typedef struct coluna
+typedef struct artigo
 {
-    char* linha1;
-    char* linha2;
-    char* linha3;
-}Coluna;
+    int id;
+    int ano;
+    char autor[200];
+    char titulo[200];
+    char revista[200];
+    char DOI[20];
+    char palavraChave[200];
+}Artigo;
 
-Coluna* getColuna(Node* node)//return pointer to Coluna type
+Artigo* getArtigo(Node* node)//return pointer to Artigo type
 {
     if(node != NULL)
-        return (Coluna*) node->info;
+        return (Artigo*) node->info;
     return NULL;
 }
 
 //*************************************************************functions needed by the RB library 
 
-void* getKey(Node* node)
+int getKey(Node* node)
 {
     if(node != NULL)
-        return getColuna(node)->linha1;
-    return NULL;
+        return getArtigo(node)->id;
+    return 0;
 }
 
-int compareInfo(void* info1, void* info2)//comparing strings
+int compareInfo(int info1, int info2)//comparing strings
 {
-    int aux = strcmp((char*)info1, (char*)info2);
-    if(aux == 0)
+    if(info1==info2){
         return 0;
-    else if (aux < 0)
+    }
+    else if(info1<info2){
         return -1;
+    }
     else 
         return 1;
 }
 
+
 void destroyInfo(void* info)
 {
-    if(info != NULL)
-    {
-        free(((Coluna*)info)->linha1);
-        free(((Coluna*)info)->linha2);
-        free(((Coluna*)info)->linha3);
-    }
-    free((Coluna*)info);
+    free(info);
 }
 
 void printKey(Node* ptr)
 {
     if(ptr != NULL)
-        printf("%s", getColuna(ptr)->linha1);
+        printf("%d", getArtigo(ptr)->id);
+}
+void printKey2(Node* ptr)
+{
+    if(ptr != NULL)
+        printf("\n%d\t%s", getArtigo(ptr)->id,getArtigo(ptr)->titulo);
+}
+void printTitle(Node* ptr)
+{
+    if(ptr != NULL)
+        printf("%s", getArtigo(ptr)->titulo);
 }
 
 //*************************************************************END
 
-void fillColuna(Coluna* ptr)
-{//get information from input and store inside Coluna respective members
+/*void fillArtigo(Artigo* ptr)
+{//get information from input and store inside Artigo respective members
     printf("Conteúdo da linha 1: ");
     scanf("%s", ptr->linha1);
-/*    printf("\nConteúdo da linha 2: ");
+    printf("\nConteúdo da linha 2: ");
     scanf("%s", ptr->linha2);
     printf("\nConteúdo da linha 3: ");
-    scanf("%s", ptr->linha3);*/
+    scanf("%s", ptr->linha3);
+}*/
+
+void printArtigo(Artigo* ptr)
+{
+    printf("ID: %d\n", ptr->id);
+    printf("ANO: %d\n", ptr->ano);
+    printf("AUTOR: %s\n", ptr->autor);
+    printf("TITULO: %s\n", ptr->titulo);
+    printf("REVISTA: %s\n", ptr->revista);
+    printf("DOI: %s\n", ptr->DOI);
+    printf("PALAVRA CHAVE: %s\n", ptr->palavraChave);
 }
 
-void printColuna(Coluna* ptr)
+Artigo* createArtigo()
 {
-    printf("linha 1: %s\n", ptr->linha1);
-    printf("linha 2: %s\n", ptr->linha2);
-    printf("linha 3: %s\n", ptr->linha3);
-}
-
-Coluna* createColuna()
-{
-    Coluna* ptr = (Coluna*) malloc(sizeof(Coluna));
+    Artigo* ptr = (Artigo*) malloc(sizeof(Artigo));
+    char enter;
     if(ptr != NULL)
     {
-        ptr->linha1 = malloc(sizeof(char)*100);//no word bigger than 100 characters is going to be processed
-        ptr->linha2 = malloc(sizeof(char)*100);
-        ptr->linha3 = malloc(sizeof(char)*100);
-        fillColuna(ptr);//call the input to fill it's contents
+        printf("Digite o ID: ");
+        scanf("%d", &ptr->id);
+        printf("Digite o ano: ");
+        scanf("%d", &ptr->ano);
+        scanf("%c",&enter);
+        printf("Nome do Autor: ");
+        scanf("%[^\n]",ptr->autor);
+        scanf("%c",&enter);
+        printf("Titulo: ");
+        scanf("%[^\n]", ptr->titulo);
+        scanf("%c",&enter);
+        printf("Revista: ");
+        scanf("%[^\n]", ptr->revista);
+        scanf("%c",&enter);
+        printf("DOI: ");
+        scanf("%[^\n]", ptr->DOI);
+        scanf("%c",&enter);
+        printf("Palavra Chave: ");
+        scanf("%[^\n]", ptr->palavraChave);
+        scanf("%c",&enter);
     }
     return ptr;
 }
 
-Node* addColuna(Node* RB)
+Node* addArtigo(Node* RB)
 {
-    Node* newPtr = createNodeRBTree(createColuna());//gets Coluna content from input, allocate and fill a Coluna for those content and allocate and fill a Node with that Coluna
+    Node* newPtr = createNodeRBTree(createArtigo());//gets Artigo content from input, allocate and fill a Artigo for those content and allocate and fill a Node with that Artigo
     if(insertNodeRBTree(&RB, RB, newPtr))
         printf("Adição foi um sucesso.\n");
     else//if it doesnt add to the AVL, we have to free this new Node we created to release memory
     {
-        printf("Adição foi um fracasso.\n");
-        destroyNodeRBTree(newPtr);//this does free to Coluna and Node
+        printf("Adição fracassou. Tente adicionar outro iD\n");
+        destroyNodeRBTree(newPtr);//this does free to Artigo and Node
     }
     return RB; 
 }
 
 void menuTxt()
 {
-    printf("I : inserir coluna\n");
-    printf("R : remover coluna\n");
-    printf("P : pesquisar coluna\n");
-    printf("M : mostrar keys\n");
+    printf("I : inserir artigo\n");
+    printf("R : remover artigo\n");
+    printf("P : pesquisar artigo\n");
+    printf("M : Listar ID's\n");
+    printf("L : Listar ID's acompanhadas pelos respectivos titulos\n");
     printf("Q : Sair\n");
 }
 
 void menu()
 {
     char option = '0';
-    char* key = (char*) malloc(sizeof(char));//for search porpouse
-    if(key == NULL)//something went wrong while allocating? stops the execution
-        return;
+    int key;
     Node* RB = NULL;//where we store the AVL
     Node* ptr = NULL;//auxiliary
     do{
         menuTxt();//print the menu
         printf("Escolha uma opção:\n>");
-        scanf("%c", &option);
+        scanf(" %c", &option);
+        printf("\n");
         switch(option)
         {
             case 'i':
             case 'I':
-                RB= addColuna(RB); 
+                RB= addArtigo(RB); 
                 break;
             case 'r':
             case 'R':
                 printf("Digite a key que deseja remover\n>");
-                scanf("%s", key);
+                scanf("%d",&key);
                 if(removeNodeRBTree(&RB, RB, key))
-                {
                     printf("remoção foi um sucesso.\n");
-                    printRBTree(RB, 0);
-                }
                 else
-                    printf("remoção foi um fracasso.\n");
+                    printf("remoção fracassou.\n");
                 break;
             case 'p':
             case 'P':
                 printf("Digite a key que deseja pesquisar\n>");
-                scanf("%s", key);
-                ptr = searchInfoRBTree(RB, key);//also show the keys it needed to pass by to reach or to know it doest exist
+                scanf("%d",&key);
+                ptr = searchInfoRBTree(RB,key);//also show the keys it needed to pass by to reach or to know it doest exist
                 if(ptr != NULL)
-                    printf("linha 1: %s\nlinha 2: %s\nlinha 3: %s\n", getColuna(ptr)->linha1, getColuna(ptr)->linha2, getColuna(ptr)->linha3);//print Coluna content
+                    printArtigo(getArtigo(ptr));
                 else
                     printf("key não está registrada\n");
                 break;
-           case 'm':
-           case 'M':
+            case 'm':
+            case 'M':
                 printRBTree(RB, 0);
                 break;
+            case 'l':
+            case 'L':
+                printIDTitle(RB);
+                break;
+            
            default:
                 break;
         }
-        setbuf(stdin, NULL);//removes \n from buffer
         printf("\n\n");
     }while(option != 'q' && option != 'Q');
     destroyRBTree(RB);
@@ -165,3 +197,4 @@ int main()
 {
     menu();
 }
+

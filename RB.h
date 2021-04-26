@@ -11,6 +11,7 @@ Propriedades:
 #include <stdio.h>
 #include <stdlib.h>
 
+
 enum Color {Red = 0, Black};
 typedef struct Node
 {
@@ -22,13 +23,13 @@ typedef struct Node
 
 //***********************************************Abstract methods:
 
-void* getKey(Node* node);
+int getKey(Node* node);
 /*
 Input: Pointer to Node
 Output: node->info or NULL
 */
 
-int compareInfo(void* info1, void* info2);
+int compareInfo(int info1, int info2);
 /*
 Expected input: two generic pointers
 Expected output: 
@@ -49,6 +50,7 @@ void printKey(Node* ptr);
 Input: pointer to Node
 Output: print key of this node
 */
+void printKey2(Node* ptr);
 //***********************************************END
 
 void destroyNodeRBTree(Node* node);
@@ -82,7 +84,7 @@ Output:
     0 if node is black or NULL
     1 if it is red 
 */
-
+void printIDTitle(Node* head);
 
 void printRBTree(Node* head, int level);
 /*
@@ -96,7 +98,7 @@ Input: Pointer to a Node in a RbTree
 Output: Pointer to Node that has the smallest key
 */
 
-Node* searchInfoRBTree(Node* head, void* info);
+Node* searchInfoRBTree(Node* head, int info);
 /*
 Input: Pointer to root of Red-Black tree, information to be searched
 Output: Pointer to Node that contains information equivalent to info or NULL otherwise
@@ -110,7 +112,7 @@ Output:
     0 if it hasnt
 */
 
-int removeNodeRBTree(Node** head, Node* root, void* info);
+int removeNodeRBTree(Node** head, Node* root, int info);
 /*
 Input: Pointer of pointer to Node(already in the tree), information to be removed
 Output:
