@@ -24,19 +24,19 @@ Artigo* getArtigo(Node* node)//return pointer to Artigo type
 
 //*************************************************************functions needed by the RB library 
 
-int getKey(Node* node)
+void* getKey(Node* node)
 {
     if(node != NULL)
-        return getArtigo(node)->id;
+        return &getArtigo(node)->id;
     return 0;
 }
 
-int compareInfo(int info1, int info2)//comparing strings
+int compareInfo(void* info1, void* info2)//comparing strings
 {
-    if(info1==info2){
+    if(*(int*)info1 == *(int*)info2){
         return 0;
     }
-    else if(info1<info2){
+    else if(*(int*)info1 < *(int*)info2){
         return -1;
     }
     else 
@@ -54,11 +54,13 @@ void printKey(Node* ptr)
     if(ptr != NULL)
         printf("%d", getArtigo(ptr)->id);
 }
+
 void printKey2(Node* ptr)
 {
     if(ptr != NULL)
-        printf("\n%d\t%s", getArtigo(ptr)->id,getArtigo(ptr)->titulo);
+        printf("%d\t%s", getArtigo(ptr)->id,getArtigo(ptr)->titulo);
 }
+
 void printTitle(Node* ptr)
 {
     if(ptr != NULL)
@@ -115,13 +117,14 @@ Artigo* createArtigo()
 Node* addArtigo(Node* RB)
 {
     Node* newPtr = createNodeRBTree(createArtigo());//gets Artigo content from input, allocate and fill a Artigo for those content and allocate and fill a Node with that Artigo
-    if(insertNodeRBTree(&RB, RB, newPtr))
-        printf("Adição foi um sucesso.\n");
-    else//if it doesnt add to the AVL, we have to free this new Node we created to release memory
-    {
+    int answer = insertNodeRBTree(&RB, RB, newPtr);
+    if(answer == 0 && answer == 2)//2 was used to indicate that it found the node to be already in the Tree and did not inserted
+    {//if it doesnt add to the AVL, we have to free this new Node we created to release memory
         printf("Adição fracassou. Tente adicionar outro iD\n");
         destroyNodeRBTree(newPtr);//this does free to Artigo and Node
     }
+    else
+        printf("Adição foi um sucesso.\n");
     return RB; 
 }
 
@@ -139,7 +142,7 @@ void menu()
 {
     char option = '0';
     int key;
-    Node* RB = NULL;//where we store the AVL
+    Node* RB = NULL;//where we store the RB Tree
     Node* ptr = NULL;//auxiliary
     do{
         menuTxt();//print the menu
@@ -156,7 +159,7 @@ void menu()
             case 'R':
                 printf("Digite a key que deseja remover\n>");
                 scanf("%d",&key);
-                if(removeNodeRBTree(&RB, RB, key))
+                if(removeNodeRBTree(&RB, RB, &key))
                     printf("remoção foi um sucesso.\n");
                 else
                     printf("remoção fracassou.\n");
@@ -164,8 +167,8 @@ void menu()
             case 'p':
             case 'P':
                 printf("Digite a key que deseja pesquisar\n>");
-                scanf("%d",&key);
-                ptr = searchInfoRBTree(RB,key);//also show the keys it needed to pass by to reach or to know it doest exist
+                scanf("%d", &key);
+                ptr = searchInfoRBTree(RB, &key);//also show the keys it needed to pass by to reach or to know it doest exist
                 if(ptr != NULL)
                     printArtigo(getArtigo(ptr));
                 else
@@ -173,11 +176,11 @@ void menu()
                 break;
             case 'm':
             case 'M':
-                printRBTree(RB, 0);
+                printRBTree(RB,printKey, 0);
                 break;
             case 'l':
             case 'L':
-                printIDTitle(RB);
+                printRBTree(RB, printKey2, 0);                
                 break;
             
            default:

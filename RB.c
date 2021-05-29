@@ -2,10 +2,11 @@
 #define SMALLER (-1)
 #define ABORT 0
 #define HASNEWSON 1
-#define RIGHTGRANDSON 2
-#define LEFTGRANDSON 3
-#define DOUBLEBLACK 4
-#define RBBALANCED 5
+#define ALREADYWRITTEN 2
+#define RIGHTGRANDSON 3
+#define LEFTGRANDSON 4
+#define DOUBLEBLACK 5
+#define RBBALANCED 6
 
 void destroyNodeRBTree(Node* node)
 {
@@ -58,11 +59,11 @@ int isRed(Node* node)
     return 0;
 }
 
-void printRBTree(Node* head, int level)
+void printRBTree(Node* head, void (*printKey) (Node*),int level)
 {
     if(head != NULL)
     {
-        printRBTree(head->rightRB, level+1);
+        printRBTree(head->rightRB, printKey, level+1);
         for(int i = 0; i < level; i++)
             printf("    ");
         if(isRed(head))
@@ -77,17 +78,7 @@ void printRBTree(Node* head, int level)
         else
             printf(" (Preto)\n");
             */
-        printRBTree(head->leftRB, level+1);
-    }
-}
-void printIDTitle(Node* head)
-{
-    if(head != NULL)
-    {
-        printIDTitle(head->rightRB);
-        
-        printIDTitle(head->leftRB);
-        printKey2(head);
+        printRBTree(head->leftRB, printKey, level+1);
     }
 }
 
@@ -102,7 +93,7 @@ Node* findSmallestNodeRBTree(Node* head)
 }
 
 
-Node* searchInfoRBTree(Node* head, int key)
+Node* searchInfoRBTree(Node* head, void* key)
 {
     if (head != NULL)
     {
@@ -165,7 +156,7 @@ int insertNodeRBTree(Node** head, Node* root, Node* newNode)
     int answer = ABORT;
     int compare = 0;
     if(newNode == NULL)
-        return answer;
+        return ABORT;
     if((*head) == NULL)
     {
         *head = newNode;
@@ -175,9 +166,9 @@ int insertNodeRBTree(Node** head, Node* root, Node* newNode)
     }
     compare = compareInfo(getKey(*head), getKey(newNode));
     if(compare == 0)
-        return answer;
+        return ALREADYWRITTEN;
     if(compare == SMALLER)
-    {//newNode's info is bigger than current's
+    {//current's info is smaller than newNode's
        if((answer = insertNodeRBTree(&(*head)->rightRB, root, newNode)) != ABORT)//recursive call passing rightRB
         {
             if(answer == HASNEWSON)// answer iquals 1 means that the node in this Node(head*) rightRB is Red
@@ -248,17 +239,17 @@ int insertNodeRBTree(Node** head, Node* root, Node* newNode)
             return RBBALANCED;
         }
     }
-    //if compare equals zero, return ABORT because newNode isn't declared or newNode is already in the tree
+    //in case something works unintended, return ABORT. But it is not supposed to reach down this line.
     return answer;
 }
 
-int removeNodeRBTree(Node** head,Node* root, int info)
+int removeNodeRBTree(Node** head,Node* root, void* info)
 {
     int answer = ABORT;
     Node* ptr = NULL;
     void* aux = NULL;
     if (*head == NULL)
-        return answer;
+        return ABORT;
     int compare = compareInfo(getKey(*head), info);
     if(compare == 0)
     {//remove *head
@@ -410,5 +401,6 @@ int removeNodeRBTree(Node** head,Node* root, int info)
             return RBBALANCED;
         }
     }
+    //not suposed to reach down here!
     return answer;
 }
