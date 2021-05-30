@@ -8,11 +8,13 @@
 <p>L: Print coloured tree with keys and titles</p>
 <p>Q: Exit</p>
 <p></p>
+
 <p>If choose to insert new Article, user will be prompt for:</p>
-><p>Article's id(int)</p>
-><p>Year of publication</p>
-><p>Name of author</p>
-><p>Article's title</p>
-><p>Name of the magazine</p>
-><p>Code DOI(sting)</p>
-><p>Key words</p>
+
+>  <p>Article's id(int)</p>
+>  <p>Year of publication</p>
+>  <p>Name of author</p>
+>  <p>Article's title</p>
+>  <p>Name of the magazine</p>
+>  <p>Code DOI(sting)</p>
+>  <p>Key words</p>
