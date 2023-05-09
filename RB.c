@@ -13,6 +13,7 @@ void destroyNodeRBTree(Node* node)
     if(node != NULL)
         destroyInfo(node->info);
     free(node);
+    node = NULL;
 }
 
 void destroyRBTree(Node* node)
