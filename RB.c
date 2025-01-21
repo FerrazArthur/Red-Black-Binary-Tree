@@ -12,17 +12,20 @@ void destroyNodeRBTree(Node* node)
 {
     if(node != NULL)
         destroyInfo(node->info);
+    node->info = NULL;
+    node->leftRB = NULL;
+    node->rightRB = NULL;
     free(node);
-    node = NULL;
 }
 
-void destroyRBTree(Node* node)
+void destroyRBTree(Node** node)
 {
-    if(node != NULL)
+    if(node != NULL && *node != NULL)
     {
-        destroyRBTree(node->leftRB);
-        destroyRBTree(node->rightRB);
-        destroyNodeRBTree(node);
+        destroyRBTree(&(*node)->leftRB);
+        destroyRBTree(&(*node)->rightRB);
+        destroyNodeRBTree(*node);
+        *node = NULL;
     }
 }
 

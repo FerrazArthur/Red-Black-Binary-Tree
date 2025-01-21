@@ -7,12 +7,6 @@ Autor: Arthur Ferraz
 typedef struct artigo
 {
     int id;
-    int ano;
-    char autor[200];
-    char titulo[200];
-    char revista[200];
-    char DOI[20];
-    char palavraChave[200];
 }Artigo;
 
 Artigo* getArtigo(Node* node)//return pointer to Artigo type
@@ -31,7 +25,7 @@ void* getKey(Node* node)
     return 0;
 }
 
-int compareInfo(void* info1, void* info2)//comparing strings
+int compareInfo(void* info1, void* info2)//comparing integers
 {
     if(*(int*)info1 == *(int*)info2){
         return 0;
@@ -55,18 +49,6 @@ void printKey(Node* ptr)
         printf("%d", getArtigo(ptr)->id);
 }
 
-void printKey2(Node* ptr)
-{
-    if(ptr != NULL)
-        printf("%d\t%s", getArtigo(ptr)->id,getArtigo(ptr)->titulo);
-}
-
-void printTitle(Node* ptr)
-{
-    if(ptr != NULL)
-        printf("%s", getArtigo(ptr)->titulo);
-}
-
 //*************************************************************END
 
 /*void fillArtigo(Artigo* ptr)
@@ -82,12 +64,6 @@ void printTitle(Node* ptr)
 void printArtigo(Artigo* ptr)
 {
     printf("ID: %d\n", ptr->id);
-    printf("ANO: %d\n", ptr->ano);
-    printf("AUTOR: %s\n", ptr->autor);
-    printf("TITULO: %s\n", ptr->titulo);
-    printf("REVISTA: %s\n", ptr->revista);
-    printf("DOI: %s\n", ptr->DOI);
-    printf("PALAVRA CHAVE: %s\n", ptr->palavraChave);
 }
 
 Artigo* createArtigo()
@@ -97,19 +73,6 @@ Artigo* createArtigo()
     {
         printf("Digite o ID: ");
         scanf("%d", &ptr->id);
-        printf("Digite o ano: ");
-        scanf("%d", &ptr->ano);
-        setbuf(stdin, NULL);
-        printf("Nome do Autor: ");
-        fgets(ptr->autor, 200, stdin);
-        printf("Titulo: ");
-        fgets(ptr->titulo, 200, stdin);
-        printf("Revista: ");
-        fgets(ptr->revista, 200, stdin);
-        printf("DOI: ");
-        fgets(ptr->DOI, 20, stdin);
-        printf("Palavra Chave: ");
-        fgets(ptr->palavraChave, 200, stdin);
     }
     return ptr;
 }
@@ -130,11 +93,9 @@ Node* addArtigo(Node* RB)
 
 void menuTxt()
 {
-    printf("I : inserir artigo\n");
-    printf("R : remover artigo\n");
-    printf("P : pesquisar artigo\n");
+    printf("I : inserir inteiro\n");
+    printf("R : remover inteiro\n");
     printf("M : Listar ID's\n");
-    printf("L : Listar ID's acompanhadas pelos respectivos titulos\n");
     printf("Q : Sair\n");
 }
 
@@ -153,7 +114,7 @@ void menu()
         {
             case 'i':
             case 'I':
-                RB = addArtigo(RB);
+                RB= addArtigo(RB); 
                 break;
             case 'r':
             case 'R':
@@ -178,11 +139,6 @@ void menu()
             case 'M':
                 printRBTree(RB,printKey, 0);
                 break;
-            case 'l':
-            case 'L':
-                printRBTree(RB, printKey2, 0);                
-                break;
-            
            default:
                 break;
         }
@@ -194,4 +150,3 @@ int main()
 {
     menu();
 }
-

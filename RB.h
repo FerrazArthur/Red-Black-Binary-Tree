@@ -62,7 +62,7 @@ Output: Void
 Behaviour: Calls destroyInfo() then unallocate Node;
 */
 
-void destroyRBTree(Node* node);
+void destroyRBTree(Node** node);
 /*
 Input: Pointer to root of Red Black binary tree
 Output: Void
